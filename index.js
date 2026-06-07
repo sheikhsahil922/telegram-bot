@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import fetch from "node-fetch";
 
-const token = "8617397096:AAEAXbfVUarvsMekg40Yv2d8_YQGnS54sMk";
+const token = "8833974326:AAGT8CYo9qxs1BC65YrOYs1CfH-oz4Dci5k";
 
 const bot = new TelegramBot(token, { polling: true });
 
