@@ -1,56 +1,32 @@
+import express from "express";
 import TelegramBot from "node-telegram-bot-api";
-import fetch from "node-fetch";
 
-const token = "8833974326:AAGT8CYo9qxs1BC65YrOYs1CfH-oz4Dci5k";
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-const bot = new TelegramBot(token, { polling: true });
-
-// Start command
-bot.onText(/\/start/, (msg) => {
-
-    const chatId = msg.chat.id;
-
-    bot.sendMessage(chatId,
-        "👋 Welcome!\n\nNumber check karne ke liye button press karo:",
-        {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: "📱 Check Number", callback_data: "check" }
-                    ]
-                ]
-            }
-        }
-    );
+// 🌐 Web server (Render ke liye MUST)
+app.get("/", (req, res) => {
+    res.send("Bot is running");
 });
 
-// Button click handler
-bot.on("callback_query", async (callbackQuery) => {
-
-    const chatId = callbackQuery.message.chat.id;
-
-    if (callbackQuery.data === "check") {
-
-        bot.sendMessage(chatId, "📩 Send me 10 digit number");
-
-    }
+app.listen(PORT, () => {
+    console.log("Server running on port " + PORT);
 });
 
-// User message handler
+// 🤖 Telegram Bot
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+
 bot.on("message", async (msg) => {
 
     const chatId = msg.chat.id;
-    const text = msg.text;
-
-    // ignore command
-    if (text.startsWith("/")) return;
+    const number = msg.text;
 
     // validation
-    if (!/^\d{10}$/.test(text)) {
+    if (!/^\d{10}$/.test(number)) {
         return bot.sendMessage(chatId, "❌ Invalid number (10 digit required)");
     }
 
-    const url = "https://exploitsindia.site/track/live.php?term=" + text;
+    const url = "https://exploitsindia.site/track/live.php?term=" + number;
 
     try {
 
@@ -60,6 +36,7 @@ bot.on("message", async (msg) => {
         bot.sendMessage(chatId, "✅ Result:\n\n" + data);
 
     } catch (err) {
+
         bot.sendMessage(chatId, "❌ Error fetching data");
     }
 });
